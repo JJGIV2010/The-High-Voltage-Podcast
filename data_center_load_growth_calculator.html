@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Center Load Growth Calculator & Planning Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toolkit {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .tool-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .tool-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid #27ae60;
+        }
+        
+        .results h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f1f2f6;
+            border-radius: 5px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .checklist {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        
+        .checklist ul {
+            list-style: none;
+        }
+        
+        .checklist li {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 15px;
+            font-size: 18px;
+            color: #ffc107;
+        }
+        
+        .voltage-guide {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .voltage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .voltage-table th, .voltage-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .voltage-table th {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .download-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: #e8f5e8;
+            border-left: 5px solid #28a745;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .toolkit {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Data Center Load Growth Calculator</h1>
+            <p>Engineering Tools for the New Grid Reality</p>
+        </div>
+        
+        <div class="toolkit">
+            <div class="tool-section">
+                <h2>🔢 Load Growth Projector</h2>
+                <div class="input-group">
+                    <label for="current-load">Current Peak Load (MW)</label>
+                    <input type="number" id="current-load" placeholder="Enter current system peak load">
+                </div>
+                <div class="input-group">
+                    <label for="dc-facilities">Planned Data Center Facilities</label>
+                    <input type="number" id="dc-facilities" placeholder="Number of facilities in pipeline">
+                </div>
+                <div class="input-group">
+                    <label for="avg-facility-size">Average Facility Size (MW)</label>
+                    <input type="number" id="avg-facility-size" placeholder="Average data center size">
+                </div>
+                <div class="input-group">
+                    <label for="timeline">Development Timeline (Years)</label>
+                    <select id="timeline">
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3">3 Years</option>
+                        <option value="5">5 Years</option>
+                    </select>
+                </div>
+                <button class="calculate-btn" onclick="calculateGrowth()">Calculate Impact</button>
+                <div id="growth-results" style="display: none;" class="results">
+                    <h3>📊 Growth Analysis Results</h3>
+                    <div id="growth-output"></div>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h2>⚡ Infrastructure Capacity Calculator</h2>
+                <div class="input-group">
+                    <label for="facility-load">Data Center Load (MW)</label>
+                    <input type="number" id="facility-load" placeholder="Individual facility load">
+                </div>
+                <div class="input-group">
+                    <label for="redundancy">Redundancy Level</label>
+                    <select id="redundancy">
+                        <option value="1.0">N (No Redundancy)</option>
+                        <option value="2.0">N+1 (100% Backup)</option>
+                        <option value="1.5">N+0.5 (50% Backup)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="voltage-level">Voltage Level (kV)</label>
+                    <select id="voltage-level">
+                        <option value="12.47">12.47 kV</option>
+                        <option value="25">25 kV</option>
+                        <option value="69">69 kV</option>
+                        <option value="138">138 kV</option>
+                    </select>
+                </div>
+                <button class="calculate-btn" onclick="calculateInfrastructure()">Calculate Requirements</button>
+                <div id="infra-results" style="display: none;" class="results">
+                    <h3>🏗️ Infrastructure Requirements</h3>
+                    <div id="infra-output"></div>
+                </div>
+            </div>
+            
+            <div class="tool-section checklist full-width">
+                <h2>✅ Data Center Engineering Checklist</h2>
+                <ul>
+                    <li>Verify available transmission capacity for step-change load increases</li>
+                    <li>Assess distribution voltage level adequacy (consider 69kV+ for >50MW)</li>
+                    <li>Evaluate substation transformer capacity and N+1 redundancy</li>
+                    <li>Review protection schemes for large, sudden load additions</li>
+                    <li>Confirm interconnection study queue position and timeline</li>
+                    <li>Assess power quality requirements (harmonics, voltage regulation)</li>
+                    <li>Plan for 99.99% reliability standards and backup generation coordination</li>
+                    <li>Consider thermal limits on existing transmission lines</li>
+                    <li>Evaluate need for dedicated transmission interconnection</li>
+                    <li>Review utility tariff structures for large industrial customers</li>
+                    <li>Plan construction timeline coordination with customer energization needs</li>
+                    <li>Assess environmental and permitting requirements for new infrastructure</li>
+                </ul>
+            </div>
+            
+            <div class="tool-section voltage-guide">
+                <h2>📏 Voltage Level Selection Guide</h2>
+                <table class="voltage-table">
+                    <thead>
+                        <tr>
+                            <th>Load Range (MW)</th>
+                            <th>Recommended Voltage</th>
+                            <th>Typical Configuration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5-15 MW</td>
+                            <td>12.47-25 kV</td>
+                            <td>Multiple feeders</td>
+                        </tr>
+                        <tr>
+                            <td>15-50 MW</td>
+                            <td>25-35 kV</td>
+                            <td>Dedicated substation</td>
+                        </tr>
+                        <tr>
+                            <td>50-100 MW</td>
+                            <td>69 kV</td>
+                            <td>Direct subtransmission</td>
+                        </tr>
+                        <tr>
+                            <td>100+ MW</td>
+                            <td>138 kV+</td>
+                            <td>Transmission interconnection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tool-section download-section">
+                <h2>📥 Download Professional Resources</h2>
+                <p>Get the complete engineering toolkit including Excel calculators, design templates, and planning checklists.</p>
+                <button class="download-btn" onclick="downloadExcelTemplate()">📊 Download Excel Calculator</button>
+                <button class="download-btn" onclick="downloadPDFGuide()">📋 Download Planning Guide PDF</button>
+                <button class="download-btn" onclick="downloadChecklist()">✅ Download Engineering Checklist</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function calculateGrowth() {
+            const currentLoad = parseFloat(document.getElementById('current-load').value) || 0;
+            const dcFacilities = parseInt(document.getElementById('dc-facilities').value) || 0;
+            const avgSize = parseFloat(document.getElementById('avg-facility-size').value) || 0;
+            const timeline = parseInt(document.getElementById('timeline').value) || 1;
+            
+            if (currentLoad === 0 || dcFacilities === 0 || avgSize === 0) {
+                alert('Please fill in all fields to calculate growth projections.');
+                return;
+            }
+            
+            const totalNewLoad = dcFacilities * avgSize;
+            const newPeakLoad = currentLoad + totalNewLoad;
+            const growthPercent = ((totalNewLoad / currentLoad) * 100).toFixed(1);
+            const annualGrowthRate = (Math.pow(newPeakLoad / currentLoad, 1/timeline) - 1) * 100;
+            
+            const output = `
+                <div class="result-item">
+                    <span><strong>Total New Data Center Load:</strong></span>
+                    <span>${totalNewLoad.toFixed(1)} MW</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>New System Peak Load:</strong></span>
+                    <span>${newPeakLoad.toFixed(1)} MW</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Total Load Growth:</strong></span>
+                    <span>${growthPercent}%</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Annualized Growth Rate:</strong></span>
+                    <span>${annualGrowthRate.toFixed(1)}%</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Infrastructure Impact:</strong></span>
+                    <span>${totalNewLoad > currentLoad * 0.2 ? 'Major upgrades required' : 'Moderate upgrades needed'}</span>
+                </div>
+            `;
+            
+            document.getElementById('growth-output').innerHTML = output;
+            document.getElementById('growth-results').style.display = 'block';
+        }
+        
+        function calculateInfrastructure() {
+            const facilityLoad = parseFloat(document.getElementById('facility-load').value) || 0;
+            const redundancy = parseFloat(document.getElementById('redundancy').value) || 1;
+            const voltage = parseFloat(document.getElementById('voltage-level').value) || 12.47;
+            
+            if (facilityLoad === 0) {
+                alert('Please enter the data center load to calculate infrastructure requirements.');
+                return;
+            }
+            
+            const totalCapacity = facilityLoad * redundancy;
+            const current = (facilityLoad * 1000) / (voltage * Math.sqrt(3)); // 3-phase current
+            const transformerSize = Math.ceil(totalCapacity / 10) * 10; // Round up to nearest 10 MVA
+            
+            let recommendation = '';
+            if (facilityLoad < 15) {
+                recommendation = 'Standard distribution connection adequate';
+            } else if (facilityLoad < 50) {
+                recommendation = 'Dedicated substation recommended';
+            } else if (facilityLoad < 100) {
+                recommendation = 'Subtransmission connection required';
+            } else {
+                recommendation = 'Transmission-level interconnection necessary';
+            }
+            
+            const output = `
+                <div class="result-item">
+                    <span><strong>Required Capacity:</strong></span>
+                    <span>${totalCapacity.toFixed(1)} MW</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Line Current:</strong></span>
+                    <span>${current.toFixed(0)} A per phase</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Transformer Size:</strong></span>
+                    <span>${transformerSize} MVA minimum</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Connection Type:</strong></span>
+                    <span>${recommendation}</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Redundancy Level:</strong></span>
+                    <span>${redundancy === 2.0 ? 'Full N+1' : redundancy === 1.5 ? 'Partial backup' : 'No redundancy'}</span>
+                </div>
+            `;
+            
+            document.getElementById('infra-output').innerHTML = output;
+            document.getElementById('infra-results').style.display = 'block';
+        }
+        
+        function downloadExcelTemplate() {
+            // In a real implementation, this would trigger download of an actual Excel file
+            alert('Excel calculator template would download here.\n\nThis demo shows the functionality - in your Substack, you would link to actual downloadable files hosted on your preferred platform.');
+        }
+        
+        function downloadPDFGuide() {
+            alert('Data Center Planning Guide PDF would download here.\n\nThis would be a comprehensive 10-15 page technical guide covering all aspects of data center electrical infrastructure planning.');
+        }
+        
+        function downloadChecklist() {
+            alert('Engineering checklist would download here.\n\nThis would be a printable PDF checklist that engineers can use for project reviews and planning meetings.');
+        }
+    </script>
+</body>
+</html>
