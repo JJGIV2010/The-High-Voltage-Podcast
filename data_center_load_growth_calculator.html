@@ -446,15 +446,24 @@
         
         function downloadExcelTemplate() {
             // In a real implementation, this would trigger download of an actual Excel file
-            alert('Excel calculator template would download here.\n\nThis demo shows the functionality - in your Substack, you would link to actual downloadable files hosted on your preferred platform.');
+            alert('Coming Soon!');
         }
         
         function downloadPDFGuide() {
-            alert('Data Center Planning Guide PDF would download here.\n\nThis would be a comprehensive 10-15 page technical guide covering all aspects of data center electrical infrastructure planning.');
+            const pdfUrl = 'https://jjgiv2010.github.io/The-High-Voltage-Podcast/Data%20Center%20Electrical%20Infrastructure%20Planning%20Guide.pdf';
+            
+            // Create a temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'Data_Center_Electrical_Infrastructure_Planning_Guide.pdf';
+            link.target = '_blank'; // Fallback to open in new tab if download fails
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
         function downloadChecklist() {
-            alert('Engineering checklist would download here.\n\nThis would be a printable PDF checklist that engineers can use for project reviews and planning meetings.');
+            alert('Included in the load growth calculator!');
         }
     </script>
 </body>
